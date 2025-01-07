@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}User{% endblock %}
+{% block user %}class="active"{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2">
+                <img id="pic" src="/static/image/{% if user.pic %}{{ user.pic }}{% else %}Kungfupanda.jpg{% endif %}" class="info img-responsive img-thumbnail">
+            </div>
+            <div class="col-md-10">
+                <h1 id="username" style="font-size:70px">User:{{ user}}</h1>
+                <p id="email" class="info" style="font-size:50px">Email: {{ user.user.email }}</p>
+            </div>
+        </div>
+        <div class="row" style="margin-top:62px">
+            <div class="col-md-4">
+                <p style="font-size:50px">Region</p>
+            </div>
+            <div class="col-md-8">
+                <p id="region" class="info" style="font-size:50px;color:gray">{{ user.region }} </p>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-4">
+                <p style="font-size:50px">What's up</p>
+            </div>
+            <div class="col-md-8">
+                <p id="motto" class="info" style="font-size:50px;color:gray">{{ user.motto}}</p>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-4">
+                <p style="font-size:50px">Album</p>
+            </div>
+            <div class="col-md-8">
+                <img src="/static/image/messi.jpg" style="width:188px">
+            </div>
+        </div>        
+        <hr>
+    </div>
+     <script>
+
+        function update_user(){
+            $.ajax({
+                type:"post",
+                url:"/update_user",
+                data:{
+                    "pic":$("#pic").val(),
+                    "email":$("#email").val(),
+                    "region":$("#region").val(),
+                    "motto":$("#motto").val(),
+                    "csrfmiddlewaretoken":"{{ csrf_token}}",
+                },
+                success:function (response) {
+
+
+                    alert(response['message'])
+                    location.reload()
+                }
+            })
+        }
+        $(document).ready(function(){
+            $(".info").click(function (){
+                $("#email").replaceWith("<input id='email' style='font-size:50px' value='"+ $("#email").html().split(":")[1].trim() +"'>")
+                $("#pic").replaceWith("<input id='pic' style='font-size:50px;width:150px;' value='"+ $("#pic").html() +"'>")
+                $("#region").replaceWith("<input id='region' style='font-size:50px' value='"+ $("#region").html() +"'>")
+                $("#motto").replaceWith("<input id='motto' style='font-size:50px' value='"+ $("#motto").html() +"'>")
+                // 显示提交按钮
+                if (!$("#submit-btn").length) {
+                    $("#username").after(`<button id='submit-btn'>提交</button>`);
+                }
+            });
+
+            // 提交更新
+            $(document).on('click', '#submit-btn', function(){
+                update_user();
+            });
+        });
+    </script>
+{% endblock %}
